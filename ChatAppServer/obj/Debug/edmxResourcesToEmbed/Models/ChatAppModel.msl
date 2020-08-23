@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="ChatAppModelStoreContainer" CdmEntityContainer="ChatAppModels">
+    <EntitySetMapping Name="Accounts">
+      <EntityTypeMapping TypeName="ChatAppModel.Account">
+        <MappingFragment StoreEntitySet="Account">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="firstName" ColumnName="firstName" />
+          <ScalarProperty Name="lastName" ColumnName="lastName" />
+          <ScalarProperty Name="birthday" ColumnName="birthday" />
+          <ScalarProperty Name="avatar" ColumnName="avatar" />
+          <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Conversations">
+      <EntityTypeMapping TypeName="ChatAppModel.Conversation">
+        <MappingFragment StoreEntitySet="Conversation">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="creatorId" ColumnName="creatorId" />
+          <ScalarProperty Name="avatar" ColumnName="avatar" />
+          <ScalarProperty Name="title" ColumnName="title" />
+          <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Messages">
+      <EntityTypeMapping TypeName="ChatAppModel.Message">
+        <MappingFragment StoreEntitySet="Message">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="conversationId" ColumnName="conversationId" />
+          <ScalarProperty Name="senderId" ColumnName="senderId" />
+          <ScalarProperty Name="content" ColumnName="content" />
+          <ScalarProperty Name="messageType" ColumnName="messageType" />
+          <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Participants">
+      <EntityTypeMapping TypeName="ChatAppModel.Participant">
+        <MappingFragment StoreEntitySet="Participant">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="conversationId" ColumnName="conversationId" />
+          <ScalarProperty Name="userId" ColumnName="userId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="Usp_GetAccountrBySignInInfo" FunctionName="ChatAppModel.Store.Usp_GetAccountrBySignInInfo">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetAccountrBySignInInfo_Result">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="firstName" ColumnName="firstName" />
+          <ScalarProperty Name="lastName" ColumnName="lastName" />
+          <ScalarProperty Name="birthday" ColumnName="birthday" />
+          <ScalarProperty Name="avatar" ColumnName="avatar" />
+          <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="Usp_GetMessagesByConversationId" FunctionName="ChatAppModel.Store.Usp_GetMessagesByConversationId">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetMessagesByConversationId_Result">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="conversationId" ColumnName="conversationId" />
+          <ScalarProperty Name="senderId" ColumnName="senderId" />
+          <ScalarProperty Name="content" ColumnName="content" />
+          <ScalarProperty Name="messageType" ColumnName="messageType" />
+          <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="Usp_GetParticipantsByConversationId" FunctionName="ChatAppModel.Store.Usp_GetParticipantsByConversationId">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetParticipantsByConversationId_Result">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="conversationId" ColumnName="conversationId" />
+          <ScalarProperty Name="userId" ColumnName="userId" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="Usp_InsertAccount" FunctionName="ChatAppModel.Store.Usp_InsertAccount" />
+    <FunctionImportMapping FunctionImportName="Usp_SearchAccountByEmailOrName" FunctionName="ChatAppModel.Store.Usp_SearchAccountByEmailOrName">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="ChatAppModel.Usp_SearchAccountByEmailOrName_Result">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="firstName" ColumnName="firstName" />
+          <ScalarProperty Name="lastName" ColumnName="lastName" />
+          <ScalarProperty Name="birthday" ColumnName="birthday" />
+          <ScalarProperty Name="avatar" ColumnName="avatar" />
+          <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+  </EntityContainerMapping>
+</Mapping>

@@ -1,0 +1,6 @@
+F:\Test_Projects\C#\winforms_app\ChatApp\ReferenceData\bin\Debug\ReferenceData.dll
+F:\Test_Projects\C#\winforms_app\ChatApp\ReferenceData\bin\Debug\ReferenceData.pdb
+F:\Test_Projects\C#\winforms_app\ChatApp\ReferenceData\obj\Debug\ReferenceData.csproj.CoreCompileInputs.cache
+F:\Test_Projects\C#\winforms_app\ChatApp\ReferenceData\obj\Debug\ReferenceData.dll
+F:\Test_Projects\C#\winforms_app\ChatApp\ReferenceData\obj\Debug\ReferenceData.pdb
+F:\Test_Projects\C#\winforms_app\ChatApp\ReferenceData\obj\Debug\ReferenceData.csprojAssemblyReference.cache

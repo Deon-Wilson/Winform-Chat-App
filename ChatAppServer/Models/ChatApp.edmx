@@ -1,0 +1,665 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="ChatAppModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="password" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="firstName" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="lastName" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="birthday" Type="datetime" />
+          <Property Name="avatar" Type="nvarchar" MaxLength="100" />
+          <Property Name="createdAt" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Conversation">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="creatorId" Type="int" Nullable="false" />
+          <Property Name="avatar" Type="nvarchar" MaxLength="100" />
+          <Property Name="title" Type="nvarchar" MaxLength="100" />
+          <Property Name="createdAt" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="conversationId" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="senderId" Type="int" Nullable="false" />
+          <Property Name="content" Type="ntext" Nullable="false" />
+          <Property Name="messageType" Type="varchar" MaxLength="4" Nullable="false" />
+          <Property Name="createdAt" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Participant">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="conversationId" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="userId" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="conversation_creatorId_FK">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="Conversation" Type="Self.Conversation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Conversation">
+              <PropertyRef Name="creatorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="message_conversationId_FK">
+          <End Role="Conversation" Type="Self.Conversation" Multiplicity="1" />
+          <End Role="Message" Type="Self.Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Conversation">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="conversationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="message_senderId_FK">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="Message" Type="Self.Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="senderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="participant_conversationId_FK">
+          <End Role="Conversation" Type="Self.Conversation" Multiplicity="1" />
+          <End Role="Participant" Type="Self.Participant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Conversation">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Participant">
+              <PropertyRef Name="conversationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="participant_userId_FK">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="Participant" Type="Self.Participant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Participant">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="Usp_GetAccountById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="Usp_GetAccountBySignInInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="email" Type="varchar" Mode="In" />
+          <Parameter Name="password" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="Usp_GetAllMessageByConversationId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="conversationId" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="Usp_GetConversationsByUserId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="Usp_GetMembersOfConversation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="conversationId" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="Usp_GetMessagesByConversationId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="conversationId" Type="varchar" Mode="In" />
+          <Parameter Name="offset" Type="int" Mode="In" />
+          <Parameter Name="limit" Type="int" Mode="In" />
+        </Function>
+        <Function Name="Usp_GetParticipantsByConversationId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="conversationId" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="Usp_InsertAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="email" Type="varchar" Mode="In" />
+          <Parameter Name="password" Type="varchar" Mode="In" />
+          <Parameter Name="firstName" Type="nvarchar" Mode="In" />
+          <Parameter Name="lastName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="Usp_InsertConversation" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="varchar" Mode="In" />
+          <Parameter Name="creatorId" Type="int" Mode="In" />
+          <Parameter Name="avatar" Type="nvarchar" Mode="In" />
+          <Parameter Name="title" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="Usp_InsertMessage" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="varchar" Mode="In" />
+          <Parameter Name="conversationId" Type="varchar" Mode="In" />
+          <Parameter Name="senderId" Type="int" Mode="In" />
+          <Parameter Name="content" Type="ntext" Mode="In" />
+          <Parameter Name="messageType" Type="varchar" Mode="In" />
+          <Parameter Name="createdAt" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="Usp_InsertParticipant" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="userId" Type="int" Mode="In" />
+          <Parameter Name="conversationId" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="Usp_SearchAccountByEmailOrName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="keyword" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="Usp_UpdateAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+          <Parameter Name="email" Type="varchar" Mode="In" />
+          <Parameter Name="password" Type="varchar" Mode="In" />
+          <Parameter Name="firstName" Type="nvarchar" Mode="In" />
+          <Parameter Name="lastName" Type="nvarchar" Mode="In" />
+          <Parameter Name="birthday" Type="datetime" Mode="In" />
+          <Parameter Name="avatar" Type="nvarchar" Mode="In" />
+        </Function>
+        <EntityContainer Name="ChatAppModelStoreContainer">
+          <EntitySet Name="Account" EntityType="Self.Account" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Conversation" EntityType="Self.Conversation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Participant" EntityType="Self.Participant" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="conversation_creatorId_FK" Association="Self.conversation_creatorId_FK">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="Conversation" EntitySet="Conversation" />
+          </AssociationSet>
+          <AssociationSet Name="message_conversationId_FK" Association="Self.message_conversationId_FK">
+            <End Role="Conversation" EntitySet="Conversation" />
+            <End Role="Message" EntitySet="Message" />
+          </AssociationSet>
+          <AssociationSet Name="message_senderId_FK" Association="Self.message_senderId_FK">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="Message" EntitySet="Message" />
+          </AssociationSet>
+          <AssociationSet Name="participant_conversationId_FK" Association="Self.participant_conversationId_FK">
+            <End Role="Conversation" EntitySet="Conversation" />
+            <End Role="Participant" EntitySet="Participant" />
+          </AssociationSet>
+          <AssociationSet Name="participant_userId_FK" Association="Self.participant_userId_FK">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="Participant" EntitySet="Participant" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ChatAppModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="password" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="firstName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="lastName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="birthday" Type="DateTime" Precision="3" />
+          <Property Name="avatar" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="createdAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Conversations" Relationship="Self.conversation_creatorId_FK" FromRole="Account" ToRole="Conversation" />
+          <NavigationProperty Name="Messages" Relationship="Self.message_senderId_FK" FromRole="Account" ToRole="Message" />
+          <NavigationProperty Name="Participants" Relationship="Self.participant_userId_FK" FromRole="Account" ToRole="Participant" />
+        </EntityType>
+        <EntityType Name="Conversation">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="creatorId" Type="Int32" Nullable="false" />
+          <Property Name="avatar" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="createdAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Account" Relationship="Self.conversation_creatorId_FK" FromRole="Conversation" ToRole="Account" />
+          <NavigationProperty Name="Messages" Relationship="Self.message_conversationId_FK" FromRole="Conversation" ToRole="Message" />
+          <NavigationProperty Name="Participants" Relationship="Self.participant_conversationId_FK" FromRole="Conversation" ToRole="Participant" />
+        </EntityType>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="conversationId" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="senderId" Type="Int32" Nullable="false" />
+          <Property Name="content" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="messageType" Type="String" MaxLength="4" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="createdAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Account" Relationship="Self.message_senderId_FK" FromRole="Message" ToRole="Account" />
+          <NavigationProperty Name="Conversation" Relationship="Self.message_conversationId_FK" FromRole="Message" ToRole="Conversation" />
+        </EntityType>
+        <EntityType Name="Participant">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="conversationId" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="userId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Account" Relationship="Self.participant_userId_FK" FromRole="Participant" ToRole="Account" />
+          <NavigationProperty Name="Conversation" Relationship="Self.participant_conversationId_FK" FromRole="Participant" ToRole="Conversation" />
+        </EntityType>
+        <Association Name="conversation_creatorId_FK">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="Conversation" Type="Self.Conversation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Conversation">
+              <PropertyRef Name="creatorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="message_senderId_FK">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="Message" Type="Self.Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="senderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="participant_userId_FK">
+          <End Role="Account" Type="Self.Account" Multiplicity="1" />
+          <End Role="Participant" Type="Self.Participant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Participant">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="message_conversationId_FK">
+          <End Role="Conversation" Type="Self.Conversation" Multiplicity="1" />
+          <End Role="Message" Type="Self.Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Conversation">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="conversationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="participant_conversationId_FK">
+          <End Role="Conversation" Type="Self.Conversation" Multiplicity="1" />
+          <End Role="Participant" Type="Self.Participant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Conversation">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Participant">
+              <PropertyRef Name="conversationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ChatAppModels" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Accounts" EntityType="Self.Account" />
+          <EntitySet Name="Conversations" EntityType="Self.Conversation" />
+          <EntitySet Name="Messages" EntityType="Self.Message" />
+          <EntitySet Name="Participants" EntityType="Self.Participant" />
+          <AssociationSet Name="conversation_creatorId_FK" Association="Self.conversation_creatorId_FK">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="Conversation" EntitySet="Conversations" />
+          </AssociationSet>
+          <AssociationSet Name="message_senderId_FK" Association="Self.message_senderId_FK">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="participant_userId_FK" Association="Self.participant_userId_FK">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="Participant" EntitySet="Participants" />
+          </AssociationSet>
+          <AssociationSet Name="message_conversationId_FK" Association="Self.message_conversationId_FK">
+            <End Role="Conversation" EntitySet="Conversations" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="participant_conversationId_FK" Association="Self.participant_conversationId_FK">
+            <End Role="Conversation" EntitySet="Conversations" />
+            <End Role="Participant" EntitySet="Participants" />
+          </AssociationSet>
+          <FunctionImport Name="Usp_GetAccountById" ReturnType="Collection(ChatAppModel.Usp_GetAccountById_Result)">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_GetAccountBySignInInfo" ReturnType="Collection(ChatAppModel.Usp_GetAccountBySignInInfo_Result)">
+            <Parameter Name="email" Mode="In" Type="String" />
+            <Parameter Name="password" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_GetAllMessageByConversationId" ReturnType="Collection(ChatAppModel.Usp_GetAllMessageByConversationId_Result)">
+            <Parameter Name="conversationId" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_GetConversationsByUserId" ReturnType="Collection(ChatAppModel.Usp_GetConversationsByUserId_Result)">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_GetMembersOfConversation" ReturnType="Collection(ChatAppModel.Usp_GetMembersOfConversation_Result)">
+            <Parameter Name="conversationId" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_GetMessagesByConversationId" ReturnType="Collection(ChatAppModel.Usp_GetMessagesByConversationId_Result)">
+            <Parameter Name="conversationId" Mode="In" Type="String" />
+            <Parameter Name="offset" Mode="In" Type="Int32" />
+            <Parameter Name="limit" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_GetParticipantsByConversationId" ReturnType="Collection(ChatAppModel.Usp_GetParticipantsByConversationId_Result)">
+            <Parameter Name="conversationId" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_InsertAccount">
+            <Parameter Name="email" Mode="In" Type="String" />
+            <Parameter Name="password" Mode="In" Type="String" />
+            <Parameter Name="firstName" Mode="In" Type="String" />
+            <Parameter Name="lastName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_InsertConversation">
+            <Parameter Name="id" Mode="In" Type="String" />
+            <Parameter Name="creatorId" Mode="In" Type="Int32" />
+            <Parameter Name="avatar" Mode="In" Type="String" />
+            <Parameter Name="title" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_InsertMessage">
+            <Parameter Name="id" Mode="In" Type="String" />
+            <Parameter Name="conversationId" Mode="In" Type="String" />
+            <Parameter Name="senderId" Mode="In" Type="Int32" />
+            <Parameter Name="content" Mode="In" Type="String" />
+            <Parameter Name="messageType" Mode="In" Type="String" />
+            <Parameter Name="createdAt" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_InsertParticipant">
+            <Parameter Name="userId" Mode="In" Type="Int32" />
+            <Parameter Name="conversationId" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_SearchAccountByEmailOrName" ReturnType="Collection(ChatAppModel.Usp_SearchAccountByEmailOrName_Result)">
+            <Parameter Name="keyword" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="Usp_UpdateAccount">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="email" Mode="In" Type="String" />
+            <Parameter Name="password" Mode="In" Type="String" />
+            <Parameter Name="firstName" Mode="In" Type="String" />
+            <Parameter Name="lastName" Mode="In" Type="String" />
+            <Parameter Name="birthday" Mode="In" Type="DateTime" />
+            <Parameter Name="avatar" Mode="In" Type="String" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="Usp_GetAccountById_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="email" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="password" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="firstName" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="lastName" Nullable="false" MaxLength="30" />
+          <Property Type="DateTime" Name="birthday" Nullable="true" Precision="23" />
+          <Property Type="String" Name="avatar" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="createdAt" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="Usp_GetAccountBySignInInfo_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="email" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="password" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="firstName" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="lastName" Nullable="false" MaxLength="30" />
+          <Property Type="DateTime" Name="birthday" Nullable="true" Precision="23" />
+          <Property Type="String" Name="avatar" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="createdAt" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="Usp_GetAllMessageByConversationId_Result">
+          <Property Type="String" Name="id" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="conversationId" Nullable="false" MaxLength="30" />
+          <Property Type="Int32" Name="senderId" Nullable="false" />
+          <Property Type="String" Name="content" Nullable="false" MaxLength="Max" />
+          <Property Type="String" Name="messageType" Nullable="false" MaxLength="4" />
+          <Property Type="DateTime" Name="createdAt" Nullable="true" Precision="23" />
+          <Property Type="String" Name="firstName" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="lastName" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="avatar" Nullable="true" MaxLength="100" />
+        </ComplexType>
+        <ComplexType Name="Usp_GetConversationsByUserId_Result">
+          <Property Type="String" Name="id" Nullable="false" MaxLength="30" />
+          <Property Type="Int32" Name="creatorId" Nullable="false" />
+          <Property Type="String" Name="avatar" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="title" Nullable="true" MaxLength="100" />
+          <Property Type="Int32" Name="senderId" Nullable="false" />
+          <Property Type="String" Name="messageType" Nullable="true" MaxLength="4" />
+          <Property Type="String" Name="content" Nullable="true" MaxLength="Max" />
+          <Property Type="DateTime" Name="createdAt" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="Usp_GetMembersOfConversation_Result">
+          <Property Type="Int32" Name="id" Nullable="true" />
+          <Property Type="String" Name="email" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="password" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="firstName" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="lastName" Nullable="false" MaxLength="30" />
+          <Property Type="DateTime" Name="birthday" Nullable="true" Precision="23" />
+          <Property Type="String" Name="avatar" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="createdAt" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="Usp_GetMessagesByConversationId_Result">
+          <Property Type="String" Name="id" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="conversationId" Nullable="false" MaxLength="30" />
+          <Property Type="Int32" Name="senderId" Nullable="false" />
+          <Property Type="String" Name="firstName" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="lastName" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="avatar" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="content" Nullable="false" MaxLength="Max" />
+          <Property Type="String" Name="messageType" Nullable="false" MaxLength="4" />
+          <Property Type="DateTime" Name="createdAt" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="Usp_GetParticipantsByConversationId_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="conversationId" Nullable="false" MaxLength="30" />
+          <Property Type="Int32" Name="userId" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="Usp_SearchAccountByEmailOrName_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="email" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="password" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="firstName" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="lastName" Nullable="false" MaxLength="30" />
+          <Property Type="DateTime" Name="birthday" Nullable="true" Precision="23" />
+          <Property Type="String" Name="avatar" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="createdAt" Nullable="true" Precision="23" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ChatAppModelStoreContainer" CdmEntityContainer="ChatAppModels">
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="ChatAppModel.Account">
+              <MappingFragment StoreEntitySet="Account">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="birthday" ColumnName="birthday" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Conversations">
+            <EntityTypeMapping TypeName="ChatAppModel.Conversation">
+              <MappingFragment StoreEntitySet="Conversation">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="creatorId" ColumnName="creatorId" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Messages">
+            <EntityTypeMapping TypeName="ChatAppModel.Message">
+              <MappingFragment StoreEntitySet="Message">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="conversationId" ColumnName="conversationId" />
+                <ScalarProperty Name="senderId" ColumnName="senderId" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="messageType" ColumnName="messageType" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Participants">
+            <EntityTypeMapping TypeName="ChatAppModel.Participant">
+              <MappingFragment StoreEntitySet="Participant">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="conversationId" ColumnName="conversationId" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Usp_GetAccountById" FunctionName="ChatAppModel.Store.Usp_GetAccountById">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetAccountById_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="birthday" ColumnName="birthday" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Usp_GetAccountBySignInInfo" FunctionName="ChatAppModel.Store.Usp_GetAccountBySignInInfo">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetAccountBySignInInfo_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="birthday" ColumnName="birthday" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Usp_GetAllMessageByConversationId" FunctionName="ChatAppModel.Store.Usp_GetAllMessageByConversationId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetAllMessageByConversationId_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="conversationId" ColumnName="conversationId" />
+                <ScalarProperty Name="senderId" ColumnName="senderId" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="messageType" ColumnName="messageType" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Usp_GetConversationsByUserId" FunctionName="ChatAppModel.Store.Usp_GetConversationsByUserId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetConversationsByUserId_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="creatorId" ColumnName="creatorId" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="senderId" ColumnName="senderId" />
+                <ScalarProperty Name="messageType" ColumnName="messageType" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Usp_GetMembersOfConversation" FunctionName="ChatAppModel.Store.Usp_GetMembersOfConversation">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetMembersOfConversation_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="birthday" ColumnName="birthday" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Usp_GetMessagesByConversationId" FunctionName="ChatAppModel.Store.Usp_GetMessagesByConversationId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetMessagesByConversationId_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="conversationId" ColumnName="conversationId" />
+                <ScalarProperty Name="senderId" ColumnName="senderId" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="messageType" ColumnName="messageType" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Usp_GetParticipantsByConversationId" FunctionName="ChatAppModel.Store.Usp_GetParticipantsByConversationId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatAppModel.Usp_GetParticipantsByConversationId_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="conversationId" ColumnName="conversationId" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Usp_InsertAccount" FunctionName="ChatAppModel.Store.Usp_InsertAccount" />
+          <FunctionImportMapping FunctionImportName="Usp_InsertConversation" FunctionName="ChatAppModel.Store.Usp_InsertConversation" />
+          <FunctionImportMapping FunctionImportName="Usp_InsertMessage" FunctionName="ChatAppModel.Store.Usp_InsertMessage" />
+          <FunctionImportMapping FunctionImportName="Usp_InsertParticipant" FunctionName="ChatAppModel.Store.Usp_InsertParticipant" />
+          <FunctionImportMapping FunctionImportName="Usp_SearchAccountByEmailOrName" FunctionName="ChatAppModel.Store.Usp_SearchAccountByEmailOrName">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="ChatAppModel.Usp_SearchAccountByEmailOrName_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="birthday" ColumnName="birthday" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Usp_UpdateAccount" FunctionName="ChatAppModel.Store.Usp_UpdateAccount" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
